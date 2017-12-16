@@ -88,9 +88,8 @@ for pool in $pools; do
       #
       # uname -r | sed 's/[^0-9]*//g'
       # 111
-
+      
       temp1="$(uname -r | sed 's/[^0-9]*//g')"
-      echo "$temp1"
       if [ $temp1  -gt  110 ]; then
         scrubErrors="$(zpool status "$pool" | grep "scan" | awk '{print $10}')"
         scrubDate="$(zpool status "$pool" | grep "scan" | awk '{print $17"-"$14"-"$15"_"$16}')"
