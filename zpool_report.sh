@@ -79,8 +79,26 @@ for pool in $pools; do
   scrubAge="N/A"
   if [ "$(zpool status "$pool" | grep "scan" | awk '{print $2}')" = "scrub" ]; then
     scrubRepBytes="$(zpool status "$pool" | grep "scan" | awk '{print $4}')"
-    scrubErrors="$(zpool status "$pool" | grep "scan" | awk '{print $8}')"
-    scrubDate="$(zpool status "$pool" | grep "scan" | awk '{print $15"-"$12"-"$13"_"$14}')"
+
+      # uname -r gives the version of FreeNAS on 11.1 it = '11.1-STABLE'	
+      # uname -r gives the version of FreeNAS on 11.0 it = '11.0-STABLE'	
+      #
+      # uname -r | sed 's/[^0-9]*//g'
+      # 110
+      #
+      # uname -r | sed 's/[^0-9]*//g'
+      # 111
+
+      temp1="$(uname -r | sed 's/[^0-9]*//g')"
+      echo "$temp1"
+      if [ $temp1  -gt  110 ]; then
+        scrubErrors="$(zpool status "$pool" | grep "scan" | awk '{print $10}')"
+        scrubDate="$(zpool status "$pool" | grep "scan" | awk '{print $17"-"$14"-"$15"_"$16}')"
+      else
+        scrubErrors="$(zpool status "$pool" | grep "scan" | awk '{print $8}')"
+        scrubDate="$(zpool status "$pool" | grep "scan" | awk '{print $15"-"$12"-"$13"_"$14}')"
+      fi
+
     scrubTS="$(date -j -f "%Y-%b-%e_%H:%M:%S" "$scrubDate" "+%s")"
     currentTS="$(date "+%s")"
     scrubAge=$((((currentTS - scrubTS) + 43200) / 86400))
