@@ -35,7 +35,7 @@ get_smart_drives()
   gs_smartdrives=""
 
   for gs_drive in $gs_drives; do
-    gs_smart_flag=$("${smartctl}" -i /dev/"$gs_drive" | grep "SMART support is: Enabled" | awk '{print $4}')
+    gs_smart_flag=$("${smartctl}" -i /dev/"$gs_drive" | egrep "SMART support is:[[:blank:]]+Enabled" | awk '{print $4}')
     if [ "$gs_smart_flag" = "Enabled" ]; then
       gs_smartdrives=$gs_smartdrives" "${gs_drive}
     fi
@@ -122,7 +122,7 @@ for drive in $drives; do
   if [ -z "$brand" ]; then
     brand=$("${smartctl}" -i /dev/"${drive}" | grep "Device Model" | awk '{print $3, $4, $5}')
   fi
-  serial=$("${smartctl}" -i /dev/"${drive}" | grep "Serial Number" | awk '{print $3}')
+  serial=$("${smartctl}" -i /dev/"${drive}" | grep -i "serial number" | awk '{print $NF}')
   (
   echo ""
   echo "########## SMART status report for ${drive} drive (${brand}: ${serial}) ##########"
